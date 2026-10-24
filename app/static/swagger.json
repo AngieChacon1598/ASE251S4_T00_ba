@@ -1,0 +1,542 @@
+{
+  "swagger": "2.0",
+
+  "info": {
+    "title": "Backend Analítico API",
+    "description": "API REST para exposición de indicadores empresariales integrando SQL Server y MongoDB mediante arquitectura por capas.",
+    "version": "1.0.0"
+  },
+
+  "host": "127.0.0.1:5000",
+
+  "basePath": "/",
+
+  "schemes": [
+    "http"
+  ],
+
+  "produces": [
+    "application/json"
+  ],
+
+
+  "tags": [
+
+    {
+      "name": "Sistema",
+      "description": "Servicios generales del backend."
+    },
+
+    {
+      "name": "Indicadores SQL Server",
+      "description": "Indicadores generados a partir de datos transaccionales almacenados en SQL Server."
+    },
+
+    {
+      "name": "Indicadores MongoDB",
+      "description": "Indicadores generados a partir de colecciones almacenadas en MongoDB."
+    },
+
+    {
+      "name": "Indicadores Integrados",
+      "description": "Indicadores generados mediante integración SQL Server + MongoDB."
+    }
+
+  ],
+
+
+  "paths": {
+
+
+    "/": {
+
+      "get": {
+
+        "tags": [
+          "Sistema"
+        ],
+
+        "summary": "Estado del Backend",
+
+        "responses": {
+
+          "200": {
+
+            "description": "Backend operativo",
+
+            "schema": {
+
+              "type": "object",
+
+              "properties": {
+
+                "status": {
+
+                  "type": "string",
+
+                  "example": "ok"
+
+                },
+
+                "message": {
+
+                  "type": "string",
+
+                  "example": "Backend Analítico operativo"
+
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+
+    },
+
+
+
+    "/analytics/sales-total": {
+
+
+      "get": {
+
+
+        "tags": [
+
+          "Indicadores SQL Server"
+
+        ],
+
+
+        "summary": "Obtener ventas totales",
+
+
+        "description": "Obtiene el total de ventas utilizando información transaccional almacenada en SQL Server.",
+
+
+        "responses": {
+
+
+          "200": {
+
+
+            "description": "Indicador generado correctamente",
+
+
+            "schema": {
+
+
+              "type": "object",
+
+
+              "properties": {
+
+
+                "indicator": {
+
+                  "type": "string",
+
+                  "example": "sales_total"
+
+                },
+
+
+                "title": {
+
+                  "type": "string",
+
+                  "example": "Ventas Totales"
+
+                },
+
+
+                "chart_type": {
+
+                  "type": "string",
+
+                  "example": "card"
+
+                },
+
+
+                "data": {
+
+                  "type": "number",
+
+                  "example": 5052.00
+
+                },
+
+
+                "sources": {
+
+                  "type": "array",
+
+                  "items": {
+
+                    "type": "string"
+
+                  },
+
+                  "example": [
+
+                    "SQL Server"
+
+                  ]
+
+                }
+
+              }
+
+            }
+
+          },
+
+
+          "500": {
+
+            "description": "Error interno del servidor"
+
+          }
+
+
+        }
+
+
+      }
+
+
+    },
+
+
+
+    "/analytics/products-by-category": {
+
+
+      "get": {
+
+
+        "tags": [
+
+          "Indicadores MongoDB"
+
+        ],
+
+
+        "summary": "Obtener productos por categoría",
+
+
+        "description": "Obtiene la cantidad de productos agrupados por categoría utilizando información almacenada en MongoDB.",
+
+
+        "responses": {
+
+
+          "200": {
+
+
+            "description": "Indicador generado correctamente",
+
+
+            "schema": {
+
+
+              "type": "object",
+
+
+              "properties": {
+
+
+                "indicator": {
+
+                  "type": "string",
+
+                  "example": "products_category"
+
+                },
+
+
+                "title": {
+
+                  "type": "string",
+
+                  "example": "Productos por categoría"
+
+                },
+
+
+                "chart_type": {
+
+                  "type": "string",
+
+                  "example": "bar"
+
+                },
+
+
+                "data": {
+
+
+                  "type": "array",
+
+
+                  "items": {
+
+
+                    "type": "object",
+
+
+                    "properties": {
+
+
+                      "label": {
+
+
+                        "type": "string",
+
+                        "example": "Computers"
+
+                      },
+
+
+                      "value": {
+
+
+                        "type": "integer",
+
+                        "example": 20
+
+                      }
+
+                    }
+
+                  }
+
+                },
+
+
+                "sources": {
+
+                  "type": "array",
+
+                  "items": {
+
+                    "type": "string"
+
+                  },
+
+                  "example": [
+
+                    "MongoDB"
+
+                  ]
+
+                }
+
+              }
+
+            }
+
+          },
+
+
+          "500": {
+
+            "description": "Error interno del servidor"
+
+          }
+
+
+        }
+
+
+      }
+
+
+    },
+
+
+
+    "/analytics/top-product": {
+
+
+      "get": {
+
+
+        "tags": [
+
+          "Indicadores Integrados"
+
+        ],
+
+
+        "summary": "Obtener producto más vendido del mes",
+
+
+        "description": "Genera un indicador integrado combinando información transaccional de SQL Server con información maestra almacenada en MongoDB.",
+
+
+        "responses": {
+
+
+          "200": {
+
+
+            "description": "Indicador generado correctamente",
+
+
+            "schema": {
+
+
+              "type": "object",
+
+
+              "properties": {
+
+
+                "indicator": {
+
+
+                  "type": "string",
+
+                  "example": "top_product_month"
+
+                },
+
+
+                "title": {
+
+
+                  "type": "string",
+
+                  "example": "Producto más vendido del mes"
+
+                },
+
+
+                "chart_type": {
+
+
+                  "type": "string",
+
+                  "example": "card"
+
+                },
+
+
+                "data": {
+
+
+                  "type": "object",
+
+
+                  "properties": {
+
+
+                    "product_id": {
+
+
+                      "type": "string",
+
+                      "example": "P001"
+
+                    },
+
+
+                    "product": {
+
+
+                      "type": "string",
+
+                      "example": "Laptop HP"
+
+                    },
+
+
+                    "category": {
+
+
+                      "type": "string",
+
+                      "example": "Computadoras"
+
+                    },
+
+
+                    "quantity": {
+
+
+                      "type": "integer",
+
+                      "example": 150
+
+                    }
+
+
+                  }
+
+                },
+
+
+                "sources": {
+
+
+                  "type": "array",
+
+
+                  "items": {
+
+
+                    "type": "string"
+
+                  },
+
+
+                  "example": [
+
+                    "SQL Server",
+
+                    "MongoDB"
+
+                  ]
+
+                }
+
+              }
+
+            }
+
+          },
+
+
+          "404": {
+
+            "description": "No se encontró información del producto"
+
+          },
+
+
+          "500": {
+
+            "description": "Error interno del servidor"
+
+          }
+
+
+        }
+
+
+      }
+
+
+    }
+
+
+  }
+
+}
