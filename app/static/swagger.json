@@ -1,542 +1,386 @@
+
 {
   "swagger": "2.0",
-
   "info": {
     "title": "Backend Analítico API",
-    "description": "API REST para exposición de indicadores empresariales integrando SQL Server y MongoDB mediante arquitectura por capas.",
-    "version": "1.0.0"
+    "description": "API REST para indicadores empresariales con SQL Server y MongoDB.",
+    "version": "1.1.0"
   },
-
   "host": "127.0.0.1:5000",
-
   "basePath": "/",
-
-  "schemes": [
-    "http"
-  ],
-
-  "produces": [
-    "application/json"
-  ],
-
-
+  "schemes": ["http"],
+  "produces": ["application/json"],
   "tags": [
-
     {
       "name": "Sistema",
       "description": "Servicios generales del backend."
     },
-
     {
       "name": "Indicadores SQL Server",
-      "description": "Indicadores generados a partir de datos transaccionales almacenados en SQL Server."
+      "description": "Indicadores generados desde SQL Server."
     },
-
     {
       "name": "Indicadores MongoDB",
-      "description": "Indicadores generados a partir de colecciones almacenadas en MongoDB."
+      "description": "Indicadores generados desde MongoDB."
     },
-
     {
       "name": "Indicadores Integrados",
-      "description": "Indicadores generados mediante integración SQL Server + MongoDB."
+      "description": "Indicadores que combinan SQL Server y MongoDB."
     }
-
   ],
-
-
   "paths": {
-
-
     "/": {
-
       "get": {
-
-        "tags": [
-          "Sistema"
-        ],
-
+        "tags": ["Sistema"],
         "summary": "Estado del Backend",
-
         "responses": {
-
           "200": {
-
             "description": "Backend operativo",
-
             "schema": {
-
               "type": "object",
-
               "properties": {
-
                 "status": {
-
                   "type": "string",
-
                   "example": "ok"
-
                 },
-
                 "message": {
-
                   "type": "string",
-
                   "example": "Backend Analítico operativo"
-
                 }
-
               }
-
             }
-
           }
-
         }
-
       }
-
     },
-
-
-
-    "/analytics/sales-total": {
-
+ "/analytics/sales-total": {
 
       "get": {
-
-
         "tags": [
-
           "Indicadores SQL Server"
-
         ],
-
-
         "summary": "Obtener ventas totales",
-
-
         "description": "Obtiene el total de ventas utilizando información transaccional almacenada en SQL Server.",
-
-
         "responses": {
-
-
           "200": {
-
-
             "description": "Indicador generado correctamente",
-
-
             "schema": {
-
-
               "type": "object",
-
-
               "properties": {
-
-
                 "indicator": {
-
                   "type": "string",
-
                   "example": "sales_total"
-
                 },
 
-
                 "title": {
-
                   "type": "string",
-
                   "example": "Ventas Totales"
-
                 },
 
 
                 "chart_type": {
-
                   "type": "string",
-
                   "example": "card"
-
                 },
 
-
                 "data": {
-
                   "type": "number",
-
                   "example": 5052.00
-
                 },
 
-
                 "sources": {
-
                   "type": "array",
-
                   "items": {
-
                     "type": "string"
-
                   },
 
                   "example": [
-
                     "SQL Server"
-
                   ]
-
                 }
-
               }
-
             }
-
           },
 
-
           "500": {
-
             "description": "Error interno del servidor"
-
           }
-
-
         }
-
-
       }
-
-
     },
 
-
-
+    "/analytics/sales-by-month": {
+      "get": {
+        "tags": ["Indicadores SQL Server"],
+        "summary": "Obtener ventas agrupadas por mes",
+        "description": "Agrupa las ventas por año y mes. Permite filtrar por año.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "description": "Año que se desea consultar. El Backend valida el formato y el rango.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ventas agrupadas por mes",
+            "schema": {
+              "$ref": "#/definitions/SalesByMonthResponse"
+            }
+          },
+          "400": {
+            "description": "Parámetros inválidos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
     "/analytics/products-by-category": {
-
-
       "get": {
-
-
-        "tags": [
-
-          "Indicadores MongoDB"
-
-        ],
-
-
+        "tags": ["Indicadores MongoDB"],
         "summary": "Obtener productos por categoría",
-
-
-        "description": "Obtiene la cantidad de productos agrupados por categoría utilizando información almacenada en MongoDB.",
-
-
+        "description": "Cuenta los productos agrupados por categoría utilizando MongoDB.",
         "responses": {
-
-
           "200": {
-
-
-            "description": "Indicador generado correctamente",
-
-
+            "description": "Productos agrupados por categoría",
             "schema": {
-
-
-              "type": "object",
-
-
-              "properties": {
-
-
-                "indicator": {
-
-                  "type": "string",
-
-                  "example": "products_category"
-
-                },
-
-
-                "title": {
-
-                  "type": "string",
-
-                  "example": "Productos por categoría"
-
-                },
-
-
-                "chart_type": {
-
-                  "type": "string",
-
-                  "example": "bar"
-
-                },
-
-
-                "data": {
-
-
-                  "type": "array",
-
-
-                  "items": {
-
-
-                    "type": "object",
-
-
-                    "properties": {
-
-
-                      "label": {
-
-
-                        "type": "string",
-
-                        "example": "Computers"
-
-                      },
-
-
-                      "value": {
-
-
-                        "type": "integer",
-
-                        "example": 20
-
-                      }
-
-                    }
-
-                  }
-
-                },
-
-
-                "sources": {
-
-                  "type": "array",
-
-                  "items": {
-
-                    "type": "string"
-
-                  },
-
-                  "example": [
-
-                    "MongoDB"
-
-                  ]
-
-                }
-
-              }
-
+              "$ref": "#/definitions/ProductsByCategoryResponse"
             }
-
           },
-
-
           "500": {
-
             "description": "Error interno del servidor"
-
           }
-
-
         }
-
-
       }
-
-
     },
-
-
-
     "/analytics/top-product": {
-
-
       "get": {
-
-
-        "tags": [
-
-          "Indicadores Integrados"
-
-        ],
-
-
-        "summary": "Obtener producto más vendido del mes",
-
-
-        "description": "Genera un indicador integrado combinando información transaccional de SQL Server con información maestra almacenada en MongoDB.",
-
-
-        "responses": {
-
-
-          "200": {
-
-
-            "description": "Indicador generado correctamente",
-
-
-            "schema": {
-
-
-              "type": "object",
-
-
-              "properties": {
-
-
-                "indicator": {
-
-
-                  "type": "string",
-
-                  "example": "top_product_month"
-
-                },
-
-
-                "title": {
-
-
-                  "type": "string",
-
-                  "example": "Producto más vendido del mes"
-
-                },
-
-
-                "chart_type": {
-
-
-                  "type": "string",
-
-                  "example": "card"
-
-                },
-
-
-                "data": {
-
-
-                  "type": "object",
-
-
-                  "properties": {
-
-
-                    "product_id": {
-
-
-                      "type": "string",
-
-                      "example": "P001"
-
-                    },
-
-
-                    "product": {
-
-
-                      "type": "string",
-
-                      "example": "Laptop HP"
-
-                    },
-
-
-                    "category": {
-
-
-                      "type": "string",
-
-                      "example": "Computadoras"
-
-                    },
-
-
-                    "quantity": {
-
-
-                      "type": "integer",
-
-                      "example": 150
-
-                    }
-
-
-                  }
-
-                },
-
-
-                "sources": {
-
-
-                  "type": "array",
-
-
-                  "items": {
-
-
-                    "type": "string"
-
-                  },
-
-
-                  "example": [
-
-                    "SQL Server",
-
-                    "MongoDB"
-
-                  ]
-
-                }
-
-              }
-
-            }
-
+        "tags": ["Indicadores Integrados"],
+        "summary": "Obtener producto más vendido por periodo",
+        "description": "Calcula el producto con mayor cantidad de unidades vendidas en el periodo y recupera sus datos desde MongoDB. Sin filtros, consulta todos los periodos.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "description": "Año de las ventas. El Backend valida que sea un número entero válido.",
+            "required": false,
+            "type": "string"
           },
-
-
-          "404": {
-
-            "description": "No se encontró información del producto"
-
-          },
-
-
-          "500": {
-
-            "description": "Error interno del servidor"
-
+          {
+            "name": "month",
+            "in": "query",
+            "description": "Mes de las ventas. El Backend valida que esté entre 1 y 12.",
+            "required": false,
+            "type": "integer"
           }
-
-
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto más vendido encontrado",
+            "schema": {
+              "$ref": "#/definitions/TopProductResponse"
+            }
+          },
+          "400": {
+            "description": "Parámetros inválidos"
+          },
+          "404": {
+            "description": "No se encontró información del producto"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
         }
-
-
       }
-
-
     }
-
-
+  },
+  "definitions": {
+    "SalesTotalResponse": {
+      "type": "object",
+      "required": [
+        "indicator",
+        "title",
+        "chart_type",
+        "data",
+        "sources"
+      ],
+      "properties": {
+        "indicator": {
+          "type": "string",
+          "example": "sales_total"
+        },
+        "title": {
+          "type": "string",
+          "example": "Ventas Totales"
+        },
+        "chart_type": {
+          "type": "string",
+          "example": "card"
+        },
+        "data": {
+          "type": "number",
+          "format": "double",
+          "example": 5052.0
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": ["SQL Server"]
+        }
+      }
+    },
+    "SalesByMonthResponse": {
+      "type": "object",
+      "required": [
+        "indicator",
+        "title",
+        "chart_type",
+        "data",
+        "sources"
+      ],
+      "properties": {
+        "indicator": {
+          "type": "string",
+          "example": "sales_by_month"
+        },
+        "title": {
+          "type": "string",
+          "example": "Ventas por mes"
+        },
+        "chart_type": {
+          "type": "string",
+          "example": "bar"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "example": "2026-01"
+              },
+              "value": {
+                "type": "number",
+                "format": "double",
+                "example": 15000.0
+              }
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": ["SQL Server"]
+        }
+      }
+    },
+    "ProductsByCategoryResponse": {
+      "type": "object",
+      "required": [
+        "indicator",
+        "title",
+        "chart_type",
+        "data",
+        "sources"
+      ],
+      "properties": {
+        "indicator": {
+          "type": "string",
+          "example": "products_category"
+        },
+        "title": {
+          "type": "string",
+          "example": "Productos por categoría"
+        },
+        "chart_type": {
+          "type": "string",
+          "example": "bar"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "example": "Computers"
+              },
+              "value": {
+                "type": "integer",
+                "example": 20
+              }
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": ["MongoDB"]
+        }
+      }
+    },
+    "TopProductResponse": {
+      "type": "object",
+      "required": [
+        "indicator",
+        "title",
+        "chart_type",
+        "data",
+        "sources"
+      ],
+      "properties": {
+        "indicator": {
+          "type": "string",
+          "example": "top_product_month"
+        },
+        "title": {
+          "type": "string",
+          "example": "Producto más vendido"
+        },
+        "chart_type": {
+          "type": "string",
+          "example": "card"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "product_id": {
+              "type": "string",
+              "example": "P001"
+            },
+            "product": {
+              "type": "string",
+              "example": "Laptop HP"
+            },
+            "category": {
+              "type": "string",
+              "example": "Computadoras"
+            },
+            "quantity": {
+              "type": "integer",
+              "example": 150
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": ["SQL Server", "MongoDB"]
+        }
+      }
+    }
   }
-
 }
