@@ -1,16 +1,9 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from app.services.analytics.sales_service import SalesService
 
 
-sales_bp = Blueprint(
-
-    "sales",
-
-    __name__
-
-)
-
+sales_bp = Blueprint("sales", __name__)
 
 service = SalesService()
 
